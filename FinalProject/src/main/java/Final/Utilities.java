@@ -169,11 +169,11 @@ public class Utilities {
 				.collect(Collectors.toList());
 		/* Extract the Keys from the Sorted Map and Limit the First 100 */
 		List<String> words = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getKey).limit(10)
+				.map(Map.Entry<String,Long>::getKey).limit(100)
 				.collect(Collectors.toList());
 		/* Extract the Values from the Sorted Map and Limit the First 100 */
 		List<Long> values = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getValue).limit(10)
+				.map(Map.Entry<String,Long>::getValue).limit(100)
 				.collect(Collectors.toList());
 		/* Generate and Display the Bar Chart */
 		CategoryChart chart = new CategoryChartBuilder().width(1024).height(1024).title(title).xAxisTitle(xLabel).yAxisTitle(yLabel).build();
