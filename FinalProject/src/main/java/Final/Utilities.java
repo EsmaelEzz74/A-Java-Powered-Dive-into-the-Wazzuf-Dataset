@@ -59,11 +59,16 @@ public class Utilities {
 	public static void companyCount(JavaRDD<String> jobs){
 		// Extract the Company Column
 		JavaRDD<String> company = jobs.map(Utilities::extractCompany).filter(StringUtils::isNotBlank);
+		/*  1- Transform the Column to a list
+			2- Convert the Words to Lower Case
+			3- Remove the Pre and Post Spaces
+			4- Split with the ""
+			5- List Iterator
+		*/
 		JavaRDD<String> words = company.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
 				.split (",")).iterator ());
-		System.out.println(words.toString ());
 		// Count every word
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
@@ -90,6 +95,7 @@ public class Utilities {
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
 				.sorted (Map.Entry.comparingByValue ()).limit(3359).collect (Collectors.toList ());
+		sorted.remove(3357);
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -104,7 +110,6 @@ public class Utilities {
 				.toLowerCase()
 				.trim()
 				.split (",")).iterator ());
-		System.out.println(words.toString ());
 		// Count every word
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
@@ -120,24 +125,16 @@ public class Utilities {
 	public static void skillsCount(JavaRDD<String> jobs){
 		// Extract the Skills Column
 		JavaRDD<String> skills = jobs.map(Utilities::extractSkills).filter(StringUtils::isNotBlank);
-		/*  1- Transform the Skills to a list
-			2- Convert the Words to Lower Case
-			3- Remove the Pre and Post Spaces
-			4- Replace every Punctuation to ""
-			5- Split with the ""
-			6- List Iterator
-		* */
 		JavaRDD<String> words = skills.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
 				.replaceAll("\\p{Punct}", " ")
 				.split (" ")).iterator ());
-		System.out.println(words.toString ());
 		// Count every word
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
-				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
+				.sorted (Map.Entry.comparingByValue ()).limit(709).collect (Collectors.toList ());
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -158,7 +155,7 @@ public class Utilities {
 	}
 	/* To Extract the Location Column as JavaRDD to use it in Bar Chart */
 	public static JavaRDD<String> extractLocationColumn(JavaRDD<String> jobs){
-		JavaRDD<String> location =jobs.map(Utilities::extractLocation);
+		JavaRDD<String> location =jobs.map(Utilities::extractLocation).filter(StringUtils::isNotBlank);
 		return location;
 	}
 
@@ -172,11 +169,11 @@ public class Utilities {
 				.collect(Collectors.toList());
 		/* Extract the Keys from the Sorted Map and Limit the First 100 */
 		List<String> words = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getKey).limit(100)
+				.map(Map.Entry<String,Long>::getKey).limit(10)
 				.collect(Collectors.toList());
 		/* Extract the Values from the Sorted Map and Limit the First 100 */
 		List<Long> values = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getValue).limit(100)
+				.map(Map.Entry<String,Long>::getValue).limit(10)
 				.collect(Collectors.toList());
 		/* Generate and Display the Bar Chart */
 		CategoryChart chart = new CategoryChartBuilder().width(1024).height(1024).title(title).xAxisTitle(xLabel).yAxisTitle(yLabel).build();
