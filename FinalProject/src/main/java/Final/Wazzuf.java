@@ -22,35 +22,41 @@ public class Wazzuf {
 		JavaSparkContext sparkContext = new JavaSparkContext(conf);
 		// LOAD DATASET
 		JavaRDD<String> jobs = sparkContext.textFile("src\\main\\resources\\Wuzzuf_Jobs.csv");
-//		/* 3- Cleaning the data */
-////		Utilities.processDistinctRows(jobs);
+		/* 3- Cleaning the data */
+//		Utilities.processDistinctRows(jobs);
 		/* 4- Count the Job of each Company  */
 		System.out.println("Count the Job of each Company");
 		System.out.println("------------------------------------------------------------------------------------");
 		Utilities.companyCount(jobs);
+		System.in.read();
+		/* 5- Show Company Column in Pie Chart */
+		Utilities.companyPieChart(jobs);
 		System.in.read();
 		/* 6- the Most Popular Job Title */
 		System.out.println("The Most Popular Job Title");
 		System.out.println("------------------------------------------------------------------------------------");
 		Utilities.titleCount(jobs);
 		System.in.read();
+		/* 7- Show Title Column in Bar Chart */
+		JavaRDD<String> title = Utilities.extractTitleColumn(jobs);
+		Utilities.columnBarChart(title,"Jobs Title","Title","Count","Company Title");
+		System.in.read();
 		/* 8- the Most Popular Areas */
 		System.out.println("The Most Popular Areas");
 		System.out.println("------------------------------------------------------------------------------------");
 		Utilities.locationCount(jobs);
 		System.in.read();
+		/* 9- Show Location Column in Bar Chart */
+		JavaRDD<String> location = Utilities.extractLocationColumn(jobs);
+		Utilities.columnBarChart(location,"Jobs Location","Location","Count","Company Location");
+		System.in.read();
 		/* 10- the Most Important Skills Required   */
 		System.out.println("The Most Important Skills Required");
 		System.out.println("------------------------------------------------------------------------------------");
 		Utilities.skillsCount(jobs);
-		System.in.read();
-		JavaRDD<String> title = Utilities.extractTitleColumn(jobs);
-		JavaRDD<String> location = Utilities.extractLocationColumn(jobs);
-		Utilities.columnBarChart(title,"Jobs Title","Title","Count","Company Title");
-		System.in.read();
-		Utilities.columnBarChart(location,"Jobs Location","Location","Count","Company Location");
-		System.in.read();
-		Utilities.companyPieChart(jobs);
+
+
+
 
 	}
 
