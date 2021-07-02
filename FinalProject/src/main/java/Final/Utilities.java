@@ -89,7 +89,7 @@ public class Utilities {
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
-				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
+				.sorted (Map.Entry.comparingByValue ()).limit(3359).collect (Collectors.toList ());
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -168,7 +168,7 @@ public class Utilities {
 		/* Map the Column to its values */
 		Map<String, Long> count = column.countByValue();
 		/* Sort the map */
-		List<Map.Entry<String, Long>> sortedMap = count.entrySet().stream().sorted(Comparator.comparing(Map.Entry<String,Long>::getValue).reversed())
+		List<Map.Entry<String, Long>> sortedMap = count.entrySet().stream().sorted(Comparator.comparing(Map.Entry<String,Long>::getValue).reversed()).limit(3359)
 				.collect(Collectors.toList());
 		/* Extract the Keys from the Sorted Map and Limit the First 100 */
 		List<String> words = sortedMap.stream()
