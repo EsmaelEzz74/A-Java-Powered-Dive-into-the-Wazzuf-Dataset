@@ -2,16 +2,16 @@ package Final;
 
 import org.apache.spark.SparkConf;
 
-import java.awt.*;
+
 import java.io.IOException;
-import java.util.Map;
+
 
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.knowm.xchart.*;
+
 
 public class Wazzuf {
 
@@ -21,7 +21,7 @@ public class Wazzuf {
 		SparkConf conf = new SparkConf().setAppName("WAZZUF").setMaster("local[3]");
 		JavaSparkContext sparkContext = new JavaSparkContext(conf);
 		// LOAD DATASET
-		JavaRDD<String> jobs = sparkContext.textFile("src\\main\\resources\\Wuzzuf_Jobs.csv");
+		JavaRDD<String> jobs = sparkContext.textFile("src/main/resources/Wuzzuf_Jobs.csv");
 		/* 3- Cleaning the data */
 //		Utilities.processDistinctRows(jobs);
 		/* 4- Count the Job of each Company  */
