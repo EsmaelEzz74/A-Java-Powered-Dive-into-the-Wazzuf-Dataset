@@ -3,7 +3,12 @@ package Final;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.knowm.xchart.*;
+import org.knowm.xchart.style.PieStyler;
 import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.theme.AbstractBaseTheme;
+import org.knowm.xchart.style.theme.GGPlot2Theme;
+import org.knowm.xchart.style.theme.MatlabTheme;
+import org.knowm.xchart.style.theme.XChartTheme;
 
 
 import java.awt.*;
@@ -50,10 +55,9 @@ public class Utilities {
 
 	/////////// Void Methods   ///////////////////////////////
 	/* Removing Replicated Rows */
-	public static void processDistinctRows(JavaRDD<String> jobs){
-		System.out.println("Number of Dataset Rows is : " + jobs.count());
-		JavaRDD<String> newJobs = jobs.distinct();
-		System.out.println("Number of Distinct Rows is : " + newJobs.count());
+	public static JavaRDD<String> processDistinctRows(JavaRDD<String> jobs){
+		jobs = jobs.distinct();
+		return jobs ;
 	}
 	/* Print the Sorted Company and each Repeated */
 	public static void companyCount(JavaRDD<String> jobs){
@@ -74,11 +78,12 @@ public class Utilities {
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
 				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
-		// print the map
+
+		 //print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
-		}
 
+		}
 	}
 	/* Print the Sorted Titles and each Repeated */
 	public static void titleCount(JavaRDD<String> jobs){
@@ -87,15 +92,15 @@ public class Utilities {
 		JavaRDD<String> words = title.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
-				.replaceAll("\\p{Punct}", ",")
+//				.replaceAll("\\p{Punct}", ",")
 				.split (",")).iterator ());
 		System.out.println(words.toString ());
 		// Count every word
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
-				.sorted (Map.Entry.comparingByValue ()).limit(3359).collect (Collectors.toList ());
-		sorted.remove(3357);
+				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
+//		sorted.remove(3357);
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -128,8 +133,9 @@ public class Utilities {
 		JavaRDD<String> words = skills.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
-				.replaceAll("\\p{Punct}", " ")
+				.replaceAll("\\p{Punct}"," ")
 				.split (" ")).iterator ());
+		// \\p{Punct}
 		// Count every word
 		Map<String, Long> wordCounts = words.countByValue ();
 		// map every word by its value
@@ -169,18 +175,19 @@ public class Utilities {
 				.collect(Collectors.toList());
 		/* Extract the Keys from the Sorted Map and Limit the First 100 */
 		List<String> words = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getKey).limit(100)
+				.map(Map.Entry<String,Long>::getKey).limit(10)
 				.collect(Collectors.toList());
 		/* Extract the Values from the Sorted Map and Limit the First 100 */
 		List<Long> values = sortedMap.stream()
-				.map(Map.Entry<String,Long>::getValue).limit(100)
+				.map(Map.Entry<String,Long>::getValue).limit(10)
 				.collect(Collectors.toList());
 		/* Generate and Display the Bar Chart */
 		CategoryChart chart = new CategoryChartBuilder().width(1024).height(1024).title(title).xAxisTitle(xLabel).yAxisTitle(yLabel).build();
 		chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNW);
-		chart.getStyler().setDefaultSeriesRenderStyle(CategorySeries.CategorySeriesRenderStyle.Stick);
+		chart.getStyler().setDefaultSeriesRenderStyle(CategorySeries.CategorySeriesRenderStyle.Bar);
 		chart.getStyler().setHasAnnotations(true);
 		chart.getStyler().setStacked(true);
+		chart.getStyler().setTheme(new GGPlot2Theme());
 		chart.addSeries(seriesName, words, values);
 		new SwingWrapper(chart).displayChart();
 	}
@@ -193,7 +200,13 @@ public class Utilities {
 		/* Generate and Display the Pie Chart to the most 7 Companies */
 		PieChart chart = new PieChartBuilder().width(800).height(600).title("Companies Jobs").build();
 		Color[] sliceColors = new Color[]{ new Color(0, 255, 0), new Color(0, 0, 255),new Color(255, 0, 0), new Color(255, 255, 0),
-				 new Color(0, 255, 255), new Color(255, 0, 255), new Color(255, 111, 0)};
+				 new Color(0, 255, 255), new Color(255, 0, 255), new Color(255, 111, 0),
+				new Color(157, 255, 0, 255), new Color(125, 100, 250)};
+		chart.getStyler().setHasAnnotations(true);
+		chart.getStyler().setAnnotationDistance(1.22);
+		chart.getStyler().setPlotContentSize(.7);
+		chart.getStyler().setDefaultSeriesRenderStyle(PieSeries.PieSeriesRenderStyle.Donut);
+		chart.getStyler().setToolTipsEnabled(true);
 		chart.getStyler().setSeriesColors(sliceColors);
 		chart.addSeries("Confidential", map.get("Confidential"));
 		chart.addSeries("Mishkat Nour", map.get("Mishkat Nour"));
@@ -202,6 +215,8 @@ public class Utilities {
 		chart.addSeries("Aqarmap.com", map.get("Aqarmap.com"));
 		chart.addSeries("Majorel Egypt", map.get("Majorel Egypt"));
 		chart.addSeries("Ghassan Ahmed Alsulaiman for Electronic Services", map.get("Ghassan Ahmed Alsulaiman for Electronic Services"));
+		chart.addSeries("Flairstech",map.get("Flairstech"));
+		chart.addSeries("Profolio Consulting",map.get("Profolio Consulting"));
 		new SwingWrapper(chart).displayChart();
 	}
 
