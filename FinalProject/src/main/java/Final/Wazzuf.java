@@ -4,7 +4,8 @@ import org.apache.spark.SparkConf;
 
 
 import java.io.IOException;
-
+import java.util.List;
+import java.util.Map;
 
 
 import org.apache.log4j.Level;
@@ -23,11 +24,11 @@ public class Wazzuf {
 		// LOAD DATASET
 		JavaRDD<String> jobs = sparkContext.textFile("src/main/resources/Wuzzuf_Jobs.csv");
 		/* 3- Cleaning the data */
-//		Utilities.processDistinctRows(jobs);
+		Utilities.processDistinctRows(jobs);
 		/* 4- Count the Job of each Company  */
 		System.out.println("Count the Job of each Company");
 		System.out.println("------------------------------------------------------------------------------------");
-		Utilities.companyCount(jobs);
+		 Utilities.companyCount(jobs);
 		System.in.read();
 		/* 5- Show Company Column in Pie Chart */
 		Utilities.companyPieChart(jobs);
