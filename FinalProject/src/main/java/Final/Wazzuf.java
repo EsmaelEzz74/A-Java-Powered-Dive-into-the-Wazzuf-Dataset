@@ -22,8 +22,8 @@ public class Wazzuf {
 		SparkConf conf = new SparkConf().setAppName("WAZZUF").setMaster("local[3]");
 		JavaSparkContext sparkContext = new JavaSparkContext(conf);
 		// LOAD DATASET
-		JavaRDD<String> jobs = sparkContext.textFile("src/main/resources/Wuzzuf_Jobs.csv");
-		/* 3- Cleaning the data */
+		JavaRDD<String> jobs = sparkContext.textFile("src/main/resources/Wuzzuf_Jobs1.csv");
+//		/* 3- Cleaning the data */
 		Utilities.processDistinctRows(jobs);
 		/* 4- Count the Job of each Company  */
 		System.out.println("Count the Job of each Company");

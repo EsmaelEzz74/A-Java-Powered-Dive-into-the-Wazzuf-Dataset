@@ -43,73 +43,10 @@ public class SmileUtils {
 		DataFrame nonNullData = data.omitNullRows();
 		System.out.println("Number of non Null rows is : " + nonNullData.nrows());
 	}
-	public static String extractCompany(String Column ) {
-		try {
-			return Column.split (COMMA_DELIMITER)[1];
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return "";
-		}
+	public static int[] encodeCategory(DataFrame df , String columnName) {
+		String[] values = df.stringVector(columnName).distinct().toArray(new String[]{});
+		int[] yearsEXP = df.stringVector(columnName).factorize(new NominalScale(values)).toIntArray();
+		return yearsEXP;
 	}
-	public void companiesJobsCount(JavaRDD<String> jobs){
-		// Extract the Skills Column
-		JavaRDD<String> skills = jobs.map(SmileUtils::extractCompany).filter(StringUtils::isNotBlank);
-		/*  1- Transform the Skills to a list
-			2- Convert the Words to Lower Case
-			3- Remove the Pre and Post Spaces
-			4- Replace every Punctuation to ""
-			5- Split with the ""
-			6- List Iterator
-		* */
-		JavaRDD<String> words = skills.flatMap(word -> Arrays.asList( word
-				.toLowerCase()
-				.trim()
-				.split (",")).iterator ());
-		System.out.println(words.toString ());
-		// Count every word
-		Map<String, Long> wordCounts = words.countByValue ();
-		// map every word by its value
-		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
-				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
-		// print the map
-		for (Map.Entry entry : sorted) {
-			System.out.println (entry.getKey () + " : " + entry.getValue ());
-		}
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/* //////////////////////////////////////////////////////////////////////////////
-	public Table loadDataFromCVS(String path) throws IOException {
-		tech.tablesaw.api.Table wazzufData = tech.tablesaw.api.Table.read ().csv (path);
-		return wazzufData;
-	}
-	public String getDataInfoStructure(tech.tablesaw.api.Table data) {
-		tech.tablesaw.api.Table dataStructure = data.structure ();
-		return dataStructure.toString ();
-	}
-	public String getDataSummary(tech.tablesaw.api.Table data) {
-		Table summary = data.summary ();
-		return summary.toString ();
-	}
-	*/
-
 
 }

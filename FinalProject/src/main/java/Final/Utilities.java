@@ -3,15 +3,12 @@ package Final;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
 import org.knowm.xchart.*;
-import org.knowm.xchart.style.PieStyler;
 import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.theme.AbstractBaseTheme;
 import org.knowm.xchart.style.theme.GGPlot2Theme;
-import org.knowm.xchart.style.theme.MatlabTheme;
-import org.knowm.xchart.style.theme.XChartTheme;
 
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,25 +18,25 @@ public class Utilities {
 	/////////// String Methods ///////////////////////////////
 
 	/* To Extract the Company Column as string to use it in companyCount */
-	public static String extractCompany(String Column ) {
+	public static String extractCompany(String companyColumn ) {
 		try {
-			return Column.split (COMMA_DELIMITER)[1];
+			return companyColumn.split (COMMA_DELIMITER)[1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return "";
 		}
 	}
 	/* To Extract the Title Column as string to use it in titleCount */
-	public static String extractTitle(String skillColumn) {
+	public static String extractTitle(String titleColumn) {
 		try {
-			return skillColumn.split (COMMA_DELIMITER)[0];
+			return titleColumn.split (COMMA_DELIMITER)[0];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return "";
 		}
 	}
 	/* To Extract the Location Column as string to use it in locationCount */
-	public static String extractLocation(String skillColumn) {
+	public static String extractLocation(String locationColumn) {
 		try {
-			return skillColumn.split (COMMA_DELIMITER)[2];
+			return locationColumn.split (COMMA_DELIMITER)[2];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return "";
 		}
@@ -63,12 +60,6 @@ public class Utilities {
 	public static void companyCount(JavaRDD<String> jobs){
 		// Extract the Company Column
 		JavaRDD<String> company = jobs.map(Utilities::extractCompany).filter(StringUtils::isNotBlank);
-		/*  1- Transform the Column to a list
-			2- Convert the Words to Lower Case
-			3- Remove the Pre and Post Spaces
-			4- Split with the ""
-			5- List Iterator
-		*/
 		JavaRDD<String> words = company.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
@@ -78,7 +69,7 @@ public class Utilities {
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
 				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
-
+		Collections.reverse(sorted);
 		 //print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -92,7 +83,6 @@ public class Utilities {
 		JavaRDD<String> words = title.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
-//				.replaceAll("\\p{Punct}", ",")
 				.split (",")).iterator ());
 		System.out.println(words.toString ());
 		// Count every word
@@ -100,7 +90,7 @@ public class Utilities {
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
 				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
-//		sorted.remove(3357);
+		Collections.reverse(sorted);
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -120,6 +110,7 @@ public class Utilities {
 		// map every word by its value
 		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
 				.sorted (Map.Entry.comparingByValue ()).collect (Collectors.toList ());
+		Collections.reverse(sorted);
 		// print the map
 		for (Map.Entry entry : sorted) {
 			System.out.println (entry.getKey () + " : " + entry.getValue ());
@@ -128,24 +119,31 @@ public class Utilities {
 	}
 	/* Print the sorted Skills and each Repeated */
 	public static void skillsCount(JavaRDD<String> jobs){
-		// Extract the Skills Column
+//		Extract the Skills Column
 		JavaRDD<String> skills = jobs.map(Utilities::extractSkills).filter(StringUtils::isNotBlank);
 		JavaRDD<String> words = skills.flatMap(word -> Arrays.asList( word
 				.toLowerCase()
 				.trim()
-				.replaceAll("\\p{Punct}"," ")
-				.split (" ")).iterator ());
-		// \\p{Punct}
-		// Count every word
-		Map<String, Long> wordCounts = words.countByValue ();
-		// map every word by its value
-		List<Map.Entry> sorted = wordCounts.entrySet ().stream ()
-				.sorted (Map.Entry.comparingByValue ()).limit(709).collect (Collectors.toList ());
-		// print the map
-		for (Map.Entry entry : sorted) {
-			System.out.println (entry.getKey () + " : " + entry.getValue ());
+				.split ("\\|")).iterator ());
+		List<String> myskills = words.collect();
+		List<String> allSkills = new ArrayList<>();
+		for (String skillSet:myskills) {
+			allSkills.addAll(Arrays.asList(skillSet.split(",")));
 		}
 
+		// counting frequency
+		Map<String,Integer> temp =new HashMap<>() ;
+		for (String s: new HashSet<>(allSkills)) {
+			temp.put(s, Collections.frequency(allSkills,s));
+		}
+		// Sort the map
+		List<Map.Entry> sorted = temp.entrySet ().stream ()
+				.sorted (Map.Entry.comparingByValue()).collect (Collectors.toList ());
+		Collections.reverse(sorted);
+		/////////// find the highest freq skill
+		for (Map.Entry entry:sorted) {
+			System.out.println(entry.getKey () + " : " + entry.getValue ());
+			}
 	}
 
 	/////////// JavaRDD Methods //////////////////////////////
@@ -167,7 +165,7 @@ public class Utilities {
 
 	/////////// Chart Methods ////////////////////////////////
 	/* To Draw a Bar Chart " Give it the Wanted Column as JavaRDD and its Title, Labels and Series Name "*/
-	public static void columnBarChart(JavaRDD<String> column , String title ,String xLabel,String yLabel,String seriesName){
+	public static void columnBarChart(JavaRDD<String> column , String title ,String xLabel,String yLabel,String seriesName) throws IOException {
 		/* Map the Column to its values */
 		Map<String, Long> count = column.countByValue();
 		/* Sort the map */
@@ -190,9 +188,10 @@ public class Utilities {
 		chart.getStyler().setTheme(new GGPlot2Theme());
 		chart.addSeries(seriesName, words, values);
 		new SwingWrapper(chart).displayChart();
+		BitmapEncoder.saveBitmap(chart,title,BitmapEncoder.BitmapFormat.PNG);
 	}
 	/* To Draw a Pie Chart for the Company Column */
-	public static void companyPieChart(JavaRDD<String> jobs){
+	public static void companyPieChart(JavaRDD<String> jobs) throws IOException {
 		/* Extract the Company Column as JavaRDD */
 		JavaRDD<String> company = Utilities.extractCompanyColumn(jobs);
 		/* Map te Column to its Values */
@@ -218,6 +217,7 @@ public class Utilities {
 		chart.addSeries("Flairstech",map.get("Flairstech"));
 		chart.addSeries("Profolio Consulting",map.get("Profolio Consulting"));
 		new SwingWrapper(chart).displayChart();
+		BitmapEncoder.saveBitmap(chart,"Companies Jobs",BitmapEncoder.BitmapFormat.PNG);
 	}
 
 

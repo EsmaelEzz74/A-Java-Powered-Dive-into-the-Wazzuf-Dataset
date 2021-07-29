@@ -1,10 +1,12 @@
 package Final;
 
 import smile.data.DataFrame;
-
+import smile.data.vector.IntVector;
 
 
 import java.io.IOException;
+
+import static Final.SmileUtils.encodeCategory;
 
 
 public class WazzufSmile {
@@ -27,7 +29,8 @@ public class WazzufSmile {
 		System.out.println("Clean Null Rows");
 		System.out.println("------------------------------------------------------------");
 		smileUtil.processNullData(wazzufData);
-
+//		wazzufData = wazzufData.merge(IntVector.of("YearsExp Value",encodeCategory(wazzufData,"YearsExp")));
+//		smileUtil.getDataStructure(wazzufData);
 
 
 }

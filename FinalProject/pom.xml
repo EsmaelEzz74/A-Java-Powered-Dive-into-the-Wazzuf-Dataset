@@ -88,6 +88,16 @@
         <artifactId>spark-mllib_2.11</artifactId>
         <version>2.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.fracpete</groupId>
+            <artifactId>tablesaw-weka-package</artifactId>
+            <version>2021.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-plot</artifactId>
+            <version>0.24.4</version>
+        </dependency>
     </dependencies>
 
     <properties>
