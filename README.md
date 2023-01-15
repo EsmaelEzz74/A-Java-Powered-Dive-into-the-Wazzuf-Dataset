@@ -1,8 +1,5 @@
-# Wazzuf_Dataset
-
-Wazzuf Dataset Exploration in Java
-
-Data Exploration and Preprocessing for Wazzuf Dataset
+# A-Java-Powered-Dive-into-the-Wazzuf-Dataset
+Exploring the Insights and Patterns that Drive Successful Career Decisions
 
 •By scraping the wuzzuf website we Prepare a CSV file with 8 different requirements for a job.
 
